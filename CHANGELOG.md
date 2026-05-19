@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.4 - 2026-05-18
+
+### What's Changed
+
+* Analyze interfaces and harden class analysis by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/40
+* Fix method resolution for names that are PHP type keywords by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/43
+* Fix Eloquent builder method resolution via [@mixin](https://github.com/mixin) and integer range types by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/44
+* Pin GitHub Actions to commit SHAs and add Dependabot config by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/42
+* Fix generics propagation through Eloquent Builder method chains by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/46
+
+**Full Changelog**: https://github.com/laravel/surveyor/compare/v0.2.3...v0.2.4
+
 ## v0.2.3 - 2026-05-07
 
 ### What's Changed
