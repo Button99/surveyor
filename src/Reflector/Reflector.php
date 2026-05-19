@@ -21,6 +21,7 @@ use Laravel\Surveyor\Types\Type;
 use Laravel\Surveyor\Types\UnionType;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
+use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeFinder;
 use ReflectionClass;
 use ReflectionFunction;
@@ -477,7 +478,7 @@ class Reflector
      * arrays of resolved Surveyor Type objects corresponding to the bound generic
      * type arguments.
      *
-     * @return array<string, list<\Laravel\Surveyor\Types\Contracts\Type>>
+     * @return array<string, list<TypeContract>>
      */
     protected function parseTraitUseBindings(ReflectionClass $reflection, string $fileName): array
     {
@@ -490,8 +491,8 @@ class Reflector
         $bindings = [];
         $nodeFinder = new NodeFinder;
 
-        /** @var \PhpParser\Node\Stmt\TraitUse[] $traitUseNodes */
-        $traitUseNodes = $nodeFinder->findInstanceOf($nodes, Node\Stmt\TraitUse::class);
+        /** @var TraitUse[] $traitUseNodes */
+        $traitUseNodes = $nodeFinder->findInstanceOf($nodes, TraitUse::class);
 
         foreach ($traitUseNodes as $traitUseNode) {
             $docComment = $traitUseNode->getDocComment();
