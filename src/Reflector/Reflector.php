@@ -21,6 +21,7 @@ use Laravel\Surveyor\Types\Type;
 use Laravel\Surveyor\Types\UnionType;
 use PhpParser\Node;
 use PhpParser\Node\Expr\CallLike;
+use PhpParser\NodeFinder;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionIntersectionType;
@@ -338,6 +339,8 @@ class Reflector
                 $tempScope->setTemplateTags(array_values($overriddenTags));
                 $tempScope->setReceiverType($class);
                 $this->setScope($tempScope);
+
+                $this->resolveUseTraitBindings($reflection);
             }
         }
 
@@ -417,6 +420,98 @@ class Reflector
                 $this->setScope($scopeToRestore);
             }
         }
+    }
+
+    /**
+     * Resolve @use Trait<Type> bindings and inject the trait's template param
+     * mappings into the current scope, so that methods defined in a trait that
+     * reference the trait's own template params (e.g. TValue) resolve to the
+     * concrete types passed via @use.
+     */
+    protected function resolveUseTraitBindings(ReflectionClass $reflection): void
+    {
+        $fileName = $reflection->getFileName();
+
+        if (! $fileName || ! file_exists($fileName)) {
+            return;
+        }
+
+        $useBindings = $this->parseTraitUseBindings($reflection, $fileName);
+
+        if (empty($useBindings)) {
+            return;
+        }
+
+        $additionalTags = [];
+
+        foreach ($useBindings as $traitName => $boundTypes) {
+            try {
+                $traitReflection = $this->reflectClass($traitName);
+            } catch (Throwable $e) {
+                continue;
+            }
+
+            $traitParamNames = $this->getDocBlockParser()->getTemplateTagNames(
+                $traitReflection->getDocComment() ?: ''
+            );
+
+            foreach ($traitParamNames as $index => $paramName) {
+                $boundType = $boundTypes[$index] ?? null;
+
+                if ($boundType !== null && ! $this->scope->getTemplateTag($paramName)) {
+                    $additionalTags[] = new TemplateTagType($paramName, $boundType, null, null, null);
+                }
+            }
+        }
+
+        if (! empty($additionalTags)) {
+            $this->scope->setTemplateTags([...$this->scope->getTemplateTags(), ...$additionalTags]);
+        }
+    }
+
+    /**
+     * Parse the PHP source file of a class to extract @use Trait<Type> bindings
+     * declared on trait use statements.
+     *
+     * Returns an array keyed by fully-qualified trait name, with values being
+     * arrays of resolved Surveyor Type objects corresponding to the bound generic
+     * type arguments.
+     *
+     * @return array<string, list<\Laravel\Surveyor\Types\Contracts\Type>>
+     */
+    protected function parseTraitUseBindings(ReflectionClass $reflection, string $fileName): array
+    {
+        try {
+            $nodes = $this->getParser()->parseFile($fileName);
+        } catch (Throwable $e) {
+            return [];
+        }
+
+        $bindings = [];
+        $nodeFinder = new NodeFinder;
+
+        /** @var \PhpParser\Node\Stmt\TraitUse[] $traitUseNodes */
+        $traitUseNodes = $nodeFinder->findInstanceOf($nodes, Node\Stmt\TraitUse::class);
+
+        foreach ($traitUseNodes as $traitUseNode) {
+            $docComment = $traitUseNode->getDocComment();
+
+            if (! $docComment || ! str_contains($docComment->getText(), '@use')) {
+                continue;
+            }
+
+            $useTypes = $this->getDocBlockParser()->parseUsesTags($docComment->getText());
+
+            foreach ($useTypes as $useType) {
+                if (! $useType instanceof ClassType || count($useType->genericTypes()) === 0) {
+                    continue;
+                }
+
+                $bindings[$useType->value] = $useType->genericTypes();
+            }
+        }
+
+        return $bindings;
     }
 
     protected function resolveMacro(ReflectionClass $reflection, string $macroName): array

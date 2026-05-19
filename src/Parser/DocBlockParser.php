@@ -11,6 +11,7 @@ use Laravel\Surveyor\Types\Type;
 use PhpParser\Node\Expr\CallLike;
 use PHPStan\PhpDocParser\Ast\PhpDoc\MixinTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\UsesTagValueNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
@@ -166,6 +167,37 @@ class DocBlockParser
             fn (MixinTagValueNode $node) => $this->resolve($node->type),
             $this->parsed->getMixinTagValues(),
         );
+    }
+
+    /**
+     * Parse @use Trait<Type> tags and return their resolved generic types
+     * as ClassType objects (with generic types resolved through the current scope).
+     */
+    public function parseUsesTags(string $docBlock): array
+    {
+        $this->parse($docBlock);
+
+        return array_map(
+            fn (UsesTagValueNode $node) => $this->resolve($node->type),
+            $this->parsed->getUsesTagValues(),
+        );
+    }
+
+    /**
+     * Return the template parameter names declared in @template tags of a
+     * docblock, without updating scope (unlike parseTemplateTags).
+     *
+     * @return list<string>
+     */
+    public function getTemplateTagNames(string $docBlock): array
+    {
+        if (! $docBlock) {
+            return [];
+        }
+
+        $this->parse($docBlock);
+
+        return array_map(fn ($tag) => $tag->name, $this->parsed->getTemplateTagValues());
     }
 
     protected function parse(string $docBlock): PhpDocNode
