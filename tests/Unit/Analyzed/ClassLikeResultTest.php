@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Contracts\Support\Arrayable;
-use JsonSerializable;
 use Laravel\Surveyor\Analysis\EntityType;
 use Laravel\Surveyor\Analyzed\ClassLikeResult;
 use Laravel\Surveyor\Analyzed\MethodResult;
