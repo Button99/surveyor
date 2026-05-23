@@ -64,6 +64,27 @@ echo ""
 echo "Current version: v$CURRENT_VERSION"
 echo ""
 
+echo "Merged PRs since v$CURRENT_VERSION:"
+echo ""
+
+if [ "$CURRENT_VERSION" = "0.0.0" ]; then
+    COMMITS=$(git log --oneline)
+else
+    COMMITS=$(git log "v$CURRENT_VERSION"..HEAD --oneline)
+fi
+
+PR_NUMBERS=$(echo "$COMMITS" | grep -oE '#[0-9]+' | tr -d '#' | sort -rn)
+
+if [ -z "$PR_NUMBERS" ]; then
+    echo "  No PRs found since last release."
+else
+    for pr in $PR_NUMBERS; do
+        gh pr view "$pr" --json number,title,url | jq -r '"  #\(.number) — \(.title) (\(.url))"' 2>/dev/null || true
+    done
+fi
+
+echo ""
+
 echo "Select version bump type:"
 echo "1) patch (bug fixes)"
 echo "2) minor (new features)"
