@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.5 - 2026-05-23
+
+### What's Changed
+
+* Bump shivammathur/setup-php from 2.37.0 to 2.37.1 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/surveyor/pull/45
+* Resolve Inertia special prop types (defer, optional, lazy, always, merge) by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/48
+* Allow [@var](https://github.com/var) docblocks on array items to override inferred type by [@JasBogans](https://github.com/JasBogans) in https://github.com/laravel/surveyor/pull/41
+* Run tests in parallel by default by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/49
+
+### New Contributors
+
+* [@dependabot](https://github.com/dependabot)[bot] made their first contribution in https://github.com/laravel/surveyor/pull/45
+* [@JasBogans](https://github.com/JasBogans) made their first contribution in https://github.com/laravel/surveyor/pull/41
+
+**Full Changelog**: https://github.com/laravel/surveyor/compare/v0.2.4...v0.2.5
+
 ## v0.2.4 - 2026-05-18
 
 ### What's Changed
