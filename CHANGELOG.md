@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.6 - 2026-06-02
+
+### What's Changed
+
+* Fix PHP warning when a cached dependency file no longer exists by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/50
+
+**Full Changelog**: https://github.com/laravel/surveyor/compare/v0.2.5...v0.2.6
+
 ## v0.2.5 - 2026-05-23
 
 ### What's Changed
