@@ -2,6 +2,7 @@
 
 namespace Laravel\Surveyor\Debug;
 
+use Closure;
 use PhpParser\NodeAbstract;
 use Throwable;
 
@@ -10,6 +11,12 @@ use function Laravel\Prompts\table;
 
 class Debug
 {
+    public const LOG = 1;
+
+    public const VERBOSE = 2;
+
+    public const TRACE = 3;
+
     public static $dump = false;
 
     public static $throw = false;
@@ -80,9 +87,13 @@ class Debug
         return $timings;
     }
 
-    public static function error(Throwable $e, $message, $data = null, $level = 1)
+    public static function error(Throwable $e, $message, $data = null, $level = self::LOG)
     {
-        self::log('🚨 '.$message.' ['.$e->getMessage().'] at '.$e->getFile().':'.$e->getLine(), $data, $level);
+        self::log(
+            static fn () => '🚨 '.$message.' ['.$e->getMessage().'] at '.$e->getFile().':'.$e->getLine(),
+            $data,
+            $level,
+        );
     }
 
     public static function throwOr(Throwable $e, callable $callback)
@@ -94,10 +105,27 @@ class Debug
         return $callback();
     }
 
-    public static function log($message, $data = null, $level = 1)
+    /**
+     * Write a debug line.
+     *
+     * $message and $data may be closures, which are only called if the log
+     * level passes. Use that form when building the arguments costs anything.
+     *
+     * @param  Closure():mixed|string|mixed  $message
+     * @param  Closure():mixed|array|object|string|null  $data
+     */
+    public static function log($message, $data = null, $level = self::LOG)
     {
         if (self::$logLevel < $level) {
             return;
+        }
+
+        if ($message instanceof Closure) {
+            $message = $message();
+        }
+
+        if ($data instanceof Closure) {
+            $data = $data();
         }
 
         $indent = str_repeat('    ', self::depth());
@@ -164,14 +192,14 @@ class Debug
 
     protected static function activePath()
     {
-        $paths = array_keys(self::$paths);
-
-        return end($paths) ?? null;
+        return array_key_last(self::$paths);
     }
 
     public static function depth()
     {
-        return self::$depths[self::activePath()] ?? 0;
+        $path = self::activePath();
+
+        return $path === null ? 0 : (self::$depths[$path] ?? 0);
     }
 
     public static function reportMemoryUsage($print = true)
@@ -190,12 +218,21 @@ class Debug
 
     public static function increaseDepth()
     {
-        self::$depths[self::activePath()]++;
+        // Depth is only used to indent log output, so skip it when logging is off.
+        if (self::$logLevel < self::LOG || ($path = self::activePath()) === null) {
+            return;
+        }
+
+        self::$depths[$path] = (self::$depths[$path] ?? 0) + 1;
     }
 
     public static function decreaseDepth()
     {
-        self::$depths[self::activePath()] = max(0, self::$depths[self::activePath()] - 1);
+        if (self::$logLevel < self::LOG || ($path = self::activePath()) === null) {
+            return;
+        }
+
+        self::$depths[$path] = max(0, (self::$depths[$path] ?? 0) - 1);
     }
 
     public static function throw(Throwable $e)

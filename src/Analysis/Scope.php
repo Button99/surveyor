@@ -245,7 +245,7 @@ class Scope
         $this->stateTracker->setThis($entityName);
 
         if (! $quietly) {
-            Debug::log('🔬 Scope: '.$entityName, level: 2);
+            Debug::log('🔬 Scope: '.$entityName, level: Debug::VERBOSE);
         }
     }
 
@@ -389,7 +389,7 @@ class Scope
         $this->methodName = $methodName;
 
         if (! $quietly) {
-            Debug::log("🔬 Scope: {$this->entityName}::{$methodName}", level: 2);
+            Debug::log("🔬 Scope: {$this->entityName}::{$methodName}", level: Debug::VERBOSE);
         }
     }
 
@@ -429,8 +429,8 @@ class Scope
 
     public function startConditionAnalysis($quiet = false): void
     {
-        if (! $quiet) {
-            Debug::log('🟢 Starting condition analysis: '.$this->path(), level: 3);
+        if (! $quiet && Debug::$logLevel >= Debug::TRACE) {
+            Debug::log('🟢 Starting condition analysis: '.$this->path());
         }
 
         $this->analyzingCondition = true;
@@ -438,8 +438,8 @@ class Scope
 
     public function endConditionAnalysis($quiet = false): void
     {
-        if (! $quiet) {
-            Debug::log('🔴 Ending condition analysis: '.$this->path(), level: 3);
+        if (! $quiet && Debug::$logLevel >= Debug::TRACE) {
+            Debug::log('🔴 Ending condition analysis: '.$this->path());
         }
 
         $this->analyzingCondition = false;
@@ -451,7 +451,9 @@ class Scope
             return;
         }
 
-        Debug::log('🟡 Pausing condition analysis: '.$this->path(), level: 3);
+        if (Debug::$logLevel >= Debug::TRACE) {
+            Debug::log('🟡 Pausing condition analysis: '.$this->path());
+        }
 
         $this->analyzingConditionPaused = true;
         $this->endConditionAnalysis(true);
@@ -463,7 +465,9 @@ class Scope
             return;
         }
 
-        Debug::log('🟠 Resuming condition analysis: '.$this->path(), level: 3);
+        if (Debug::$logLevel >= Debug::TRACE) {
+            Debug::log('🟠 Resuming condition analysis: '.$this->path());
+        }
 
         $this->analyzingConditionPaused = false;
         $this->startConditionAnalysis(true);
