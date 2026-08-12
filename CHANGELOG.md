@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.2.7 - 2026-08-12
+
+### What's Changed
+
+* Add Dependabot cooldown of 5 days by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/surveyor/pull/51
+* Enable Dependabot auto-merge by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/surveyor/pull/52
+* Bump actions/checkout from 6.0.2 to 6.0.3 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/surveyor/pull/53
+* Bump shivammathur/setup-php from 2.37.1 to 2.37.2 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/surveyor/pull/55
+* Bump actions/checkout from 6.0.3 to 7.0.0 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/surveyor/pull/57
+* Bump actions/checkout from 7.0.0 to 7.0.1 in the github-actions group by [@dependabot](https://github.com/dependabot)[bot] in https://github.com/laravel/surveyor/pull/61
+* fix: resolve array cast to ArrayType instead of ArrayShapeType by [@alaminfirdows](https://github.com/alaminfirdows) in https://github.com/laravel/surveyor/pull/60
+* Fix analyzer state when given an empty path by [@Button99](https://github.com/Button99) in https://github.com/laravel/surveyor/pull/63
+* Plethora of performance improvements by [@ryangjchandler](https://github.com/ryangjchandler) in https://github.com/laravel/surveyor/pull/65
+* `composer update` by [@joetannenbaum](https://github.com/joetannenbaum) in https://github.com/laravel/surveyor/pull/66
+
+### New Contributors
+
+* [@alaminfirdows](https://github.com/alaminfirdows) made their first contribution in https://github.com/laravel/surveyor/pull/60
+* [@Button99](https://github.com/Button99) made their first contribution in https://github.com/laravel/surveyor/pull/63
+
+**Full Changelog**: https://github.com/laravel/surveyor/compare/v0.2.6...v0.2.7
+
 ## v0.2.6 - 2026-06-02
 
 ### What's Changed
